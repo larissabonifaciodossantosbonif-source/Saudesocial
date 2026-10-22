@@ -8,7 +8,6 @@ const hospitals = [
     rating: 4.9,
     emergency: true,
     specialties: ['Cardiologia', 'Urgência', 'Pediatria'],
-    distanceLabel: '3,2 km',
     description: 'Atendimento completo com pronto atendimento e especialistas 24 horas.'
   },
   {
@@ -20,7 +19,6 @@ const hospitals = [
     rating: 4.8,
     emergency: false,
     specialties: ['Clínica Geral', 'Ortopedia', 'Neurologia'],
-    distanceLabel: '4,6 km',
     description: 'Consultas rápidas, exames diagnósticos e suporte de alta qualidade.'
   },
   {
@@ -32,7 +30,6 @@ const hospitals = [
     rating: 4.9,
     emergency: true,
     specialties: ['Oncologia', 'Urologia', 'Trauma'],
-    distanceLabel: '2,9 km',
     description: 'Estrutura moderna com atendimento de urgência e equipe multidisciplinar.'
   },
   {
@@ -44,19 +41,17 @@ const hospitals = [
     rating: 4.7,
     emergency: false,
     specialties: ['Exames', 'Endocrinologia', 'Ginecologia'],
-    distanceLabel: '5,1 km',
     description: 'Diagnósticos precisos e atendimento personalizado para toda a família.'
   },
   {
     id: 5,
-    name: 'Clinica Saúde Mais',
+    name: 'Clínica Saúde Mais',
     city: 'Curitiba',
     lat: -25.4296,
     lng: -49.2719,
     rating: 4.8,
     emergency: true,
     specialties: ['Pediatria', 'Dermatologia', 'Vacinas'],
-    distanceLabel: '4,3 km',
     description: 'Foco em prevenção, bem-estar e cuidado com a saúde integral da família.'
   },
   {
@@ -68,7 +63,6 @@ const hospitals = [
     rating: 4.9,
     emergency: true,
     specialties: ['Cardiologia', 'Obstetrícia', 'Cirurgia'],
-    distanceLabel: '3,7 km',
     description: 'Especialistas renomados e apoio completo para emergências e internações.'
   }
 ];
@@ -101,17 +95,13 @@ function getDistanceInKm(lat1, lon1, lat2, lon2) {
   const dLon = toRad(lon2 - lon1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return earthRadius * c;
 }
 
 function getHospitalsByLocation(lat, lng, maxDistanceKm = 20) {
-  const nearby = hospitals
+  const ranked = hospitals
     .map((hospital) => ({
       ...hospital,
       distance: getDistanceInKm(lat, lng, hospital.lat, hospital.lng)
@@ -119,18 +109,24 @@ function getHospitalsByLocation(lat, lng, maxDistanceKm = 20) {
     .filter((hospital) => hospital.distance <= maxDistanceKm)
     .sort((a, b) => a.distance - b.distance);
 
-  return nearby.length ? nearby : hospitals
-    .map((hospital) => ({
-      ...hospital,
-      distance: getDistanceInKm(lat, lng, hospital.lat, hospital.lng)
-    }))
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3);
+  return ranked.length
+    ? ranked
+    : hospitals
+        .map((hospital) => ({
+          ...hospital,
+          distance: getDistanceInKm(lat, lng, hospital.lat, hospital.lng)
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 3);
 }
 
 function renderHospitals(items) {
   if (!items.length) {
-    hospitalList.innerHTML = '<div class="hospital-card"><p>Nenhum hospital encontrado na sua faixa de busca. Tente ampliar a distância ou outra localização.</p></div>';
+    hospitalList.innerHTML = `
+      <article class="hospital-card">
+        <p>Nenhum hospital encontrado na sua faixa de busca. Tente ampliar a distância ou outra localização.</p>
+      </article>
+    `;
     return;
   }
 
@@ -190,13 +186,13 @@ function handleSearch(lat, lng, label, maxDistanceKm) {
 }
 
 function resolveSearchByCity() {
-  const input = cityInput.value.trim();
-  const key = input.toLowerCase();
+  const city = cityInput.value.trim();
+  const key = city.toLowerCase();
 
   if (cityCoordinates[key]) {
     const { lat, lng } = cityCoordinates[key];
     const maxDistance = Number(rangeSelect.value);
-    handleSearch(lat, lng, input || 'sua região', maxDistance);
+    handleSearch(lat, lng, city || 'sua região', maxDistance);
     return;
   }
 
