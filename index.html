@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="SaudeSocial ajuda você a encontrar hospitais e clínicas próximas da sua localização com rapidez e segurança."
+      content="SaudeSocial ajuda você a encontrar hospitais, clínicas e especialistas próximos da sua localização."
     />
     <title>SaudeSocial | Hospitais Próximos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -99,6 +99,19 @@
           </div>
 
           <div class="field-group">
+            <label for="specialtySelect">Especialidade</label>
+            <select id="specialtySelect">
+              <option value="todas">Todas</option>
+              <option value="Cardiologia">Cardiologia</option>
+              <option value="Pediatria">Pediatria</option>
+              <option value="Neurologia">Neurologia</option>
+              <option value="Ortopedia">Ortopedia</option>
+              <option value="Ginecologia">Ginecologia</option>
+              <option value="Urgência">Urgência</option>
+            </select>
+          </div>
+
+          <div class="field-group">
             <label for="rangeSelect">Distância máxima</label>
             <select id="rangeSelect">
               <option value="10">Até 10 km</option>
@@ -162,6 +175,29 @@
           <a href="#">Suporte</a>
         </div>
       </footer>
+    </div>
+
+    <div id="hospitalModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close="true"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" type="button" aria-label="Fechar">×</button>
+        <div class="modal-header">
+          <span id="modalBadge" class="hospital-tag">Urgência</span>
+          <h3 id="modalTitle">Hospital</h3>
+        </div>
+        <div class="modal-body">
+          <div class="modal-meta">
+            <span id="modalCity">Cidade</span>
+            <span id="modalDistance">3,2 km</span>
+          </div>
+          <p id="modalDescription">Descrição</p>
+          <div id="modalSpecialties" class="modal-specialties"></div>
+          <div class="modal-actions">
+            <button class="primary-btn" type="button">Agendar consulta</button>
+            <button class="secondary-btn" type="button">Ligar para atendimento</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
